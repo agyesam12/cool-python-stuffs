@@ -1,0 +1,115 @@
+"""
+================================================================================
+1. Garbage Collection in Python
+================================================================================
+- Python uses automatic memory management via Garbage Collection (GC).
+- Main mechanism: Reference Counting.
+    - Every object has a reference count.
+    - When the count drops to 0, the object is deleted.
+
+- Problem: Cyclic references (e.g., object A references B, and B references A)
+  can’t be freed by reference counting alone.
+
+- Solution: Python's `gc` module detects and collects cyclic garbage.
+
+Example:
+---------
+import gc
+
+class Node:
+    def __init__(self):
+        self.ref = self
+
+node = Node()
+del node  # Still in memory due to self-reference
+gc.collect()  # Forces collection of cycles
+
+================================================================================
+2. Django Middleware: How it Works & Why Order Matters
+================================================================================
+- Middleware is a framework of hooks into Django’s request/response processing.
+- It’s a lightweight, low-level plugin system for globally altering Django’s
+  input or output.
+
+Middleware Functions:
+---------------------
+- Process request before views run.
+- Process response after view returns.
+- Handle exceptions, authentication, sessions, CORS, etc.
+
+Middleware Order:
+-----------------
+MIDDLEWARE = [
+    'middleware1',  # processed 1st on request, last on response
+    'middleware2',
+    'middleware3',
+]
+
+- Middleware is applied TOP-DOWN on the way in (request) and
+  BOTTOM-UP on the way out (response).
+
+Why Order Matters:
+------------------
+- SecurityMiddleware should be before SessionMiddleware.
+- CORS Middleware should be at the top to modify request headers early.
+- GZipMiddleware should be last to compress the final response.
+
+================================================================================
+3. Python KOL (Key Opinion Leaders)
+================================================================================
+- KOL stands for "Key Opinion Leader" in the Python ecosystem.
+- These are influencers and core contributors who:
+    - Drive best practices
+    - Build critical libraries
+    - Speak at conferences, publish tutorials
+    - Influence Python evolution
+
+Examples:
+---------
+- Guido van Rossum — Creator of Python
+- Raymond Hettinger — Core Developer, Speaker
+- Kenneth Reitz — Creator of 'requests' library
+
+Importance:
+-----------
+- Help you choose the right tools and practices.
+- Influence language features and community standards.
+- Valuable to follow for staying updated.
+
+================================================================================
+4. Deep Copy vs Shallow Copy in Python
+================================================================================
+
+Shallow Copy:
+-------------
+- Copies only the outer object, not nested/inner objects.
+- Changes to nested objects affect both copies.
+
+import copy
+
+original = [[1, 2], [3, 4]]
+shallow = copy.copy(original)
+
+shallow[0][0] = 99
+print(original)  # Output: [[99, 2], [3, 4]]
+
+Deep Copy:
+----------
+- Recursively copies all nested objects.
+- Completely independent of the original.
+
+deep = copy.deepcopy(original)
+deep[0][0] = 100
+print(original)  # Output: [[99, 2], [3, 4]] (original unchanged)
+
+Comparison Table:
+-----------------
+| Feature         | Shallow Copy         | Deep Copy           |
+|-----------------|----------------------|----------------------|
+| Speed           | Faster               | Slower               |
+| Memory Usage    | Lower                | Higher               |
+| Nested Safety   | No (shared refs)     | Yes (independent)    |
+| Use Case        | Flat/simple objects  | Nested/complex objs  |
+
+================================================================================
+"""

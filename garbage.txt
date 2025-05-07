@@ -1,0 +1,130 @@
+\===========================
+🧠 Python Garbage Collection (Advanced)
+=======================================
+
+## 🔁 Memory Management Core: Reference Counting
+
+* Each object has a reference count.
+* When count reaches 0, memory is freed.
+* Issue: Reference cycles (e.g., A → B → A).
+
+## 🔄 Cyclic Garbage Collector (GC)
+
+* Detects and cleans up circular references.
+* Uses 3 generations:
+
+  * Gen 0: Collected frequently (most objects die here)
+  * Gen 1: Promoted from Gen 0
+  * Gen 2: Longest living objects
+
+Example:
+
+```python
+import gc
+print(gc.get_threshold())  # Output: (700, 10, 10)
+```
+
+Debugging:
+
+```python
+gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+gc.collect()
+print(gc.garbage)
+```
+
+## Common Memory Leak Sources:
+
+* Exception tracebacks (reference cycles)
+* Logging large objects or errors
+* Global variables, caches
+
+## Tips:
+
+* Use `weakref` for object caching.
+* Avoid logging whole objects.
+* Clean up data structures in batch jobs.
+
+\===========================
+🌐 Django Middleware (Deep Dive)
+================================
+
+## 🏗️ Middleware Request/Response Lifecycle
+
+* Middleware wraps around view logic.
+* On request: Top-down.
+* On response: Bottom-up (reverse).
+
+Example Lifecycle:
+
+```text
+Request
+↓
+[SecurityMiddleware]
+↓
+[SessionMiddleware]
+↓
+[AuthenticationMiddleware]
+↓
+[YourView]
+↑
+[AuthenticationMiddleware]
+↑
+[SessionMiddleware]
+↑
+[SecurityMiddleware]
+```
+
+## ⚙️ Middleware Methods:
+
+```python
+class MyMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Pre-processing
+        response = self.get_response(request)
+        # Post-processing
+        return response
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        pass
+
+    def process_exception(self, request, exception):
+        pass
+```
+
+## 📌 Why Middleware Order Matters:
+
+* SessionMiddleware must come before AuthenticationMiddleware.
+* CsrfViewMiddleware must come after AuthenticationMiddleware.
+* CorsMiddleware should come first.
+
+## 🔐 Custom Middleware Example:
+
+```python
+import time
+
+class TimingMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        start = time.time()
+        response = self.get_response(request)
+        duration = time.time() - start
+        print(f"Request took {duration:.2f}s")
+        return response
+```
+
+\===========================
+✅ Interview Summary
+===================
+
+🧠 Garbage Collection:
+
+> “Python uses reference counting and a cyclic garbage collector. I avoid memory leaks by breaking cycles, using `weakref`, and managing exceptions carefully.”
+
+🌐 Django Middleware:
+
+> “Middleware is a request-response wrapper applied in a specific order. Proper order is essential—e.g., sessions before authentication, CORS before any headers.”
