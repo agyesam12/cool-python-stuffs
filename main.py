@@ -1,6 +1,5 @@
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc, html
 
 # Creating a Dash application
 app = dash.Dash(__name__)
@@ -35,4 +34,4 @@ app.layout = html.Div([
 ])
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run(debug=True)
